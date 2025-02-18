@@ -19,10 +19,13 @@ export const chunkTextByParagraph = (
   // Vespa throws an error when ingesting such strings, so we replace those characters
   const cleanText = (str: string) => {
     // Use a regular expression to remove illegal UTF-8 code points
-    return str.replace(
+    return str
+    .replace(
       /[\u0000-\u001F\u007F-\u009F\uFDD0-\uFDEF\uFFFE\uFFFF]/g,
       "",
     )
+    .replace(/\n{2,}/g, "\n") // Replace multiple newlines with a single newline
+    .trim() // Trim spaces
   }
 
   // Clean the input text before processing
@@ -30,7 +33,7 @@ export const chunkTextByParagraph = (
 
   // Split the cleaned text into paragraphs using newline characters
   const paragraphs = cleanedText.split(/\n+/).filter((p) => p.length > 0)
-
+  
   let chunks: string[] = []
   let currentChunk: string[] = []
   let currentLength = 0
@@ -105,7 +108,8 @@ export const chunkTextByParagraph = (
     addChunk(currentChunk)
   }
 
-  return chunks
+  // Filter out empty chunks
+  return chunks.filter(c => c)
 }
 
 interface Document {
